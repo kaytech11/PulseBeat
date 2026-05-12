@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
+
 interface Jwtpayload {
     id: string;
+    role: string;
 }
 
 export interface AuthRequest extends Request {

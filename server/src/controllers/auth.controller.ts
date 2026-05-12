@@ -5,10 +5,10 @@ import jwt from "jsonwebtoken";
 import { AuthRequest } from "../middleware/auth.middleware";
 
 export const register = async (req: Request, res: Response) => {
-    const { username, email, password, confirmPassword } = req.body;
+    const { username, email, password, confirmPassword, role } = req.body;
 
     // Validate input
-    if (!username || !email || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword || !role) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -29,25 +29,35 @@ export const register = async (req: Request, res: Response) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+       // validate role
+       const allowedRoles = ["LISTENER", "ARTIST",];
+
+       if (!allowedRoles.includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+       }
+
         // Create the user
         const user = await prisma.user.create({
             data: {
                 username,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+                role: role as "LISTENER" | "ARTIST",
             }
         });
 
         // Generate a token
         const token = jwt.sign(
-            { id: user.id },
+            { id: user.id,
+              role: user.role        
+             },
             process.env.JWT_SECRET as string,
             { expiresIn: "1h" }
         );
 
         res.status(201).json({ message: "User registered successfully", token });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+        res.status(500).json({ message: "Server error",  });
     }
 };
 
@@ -74,7 +84,7 @@ export const login = async (req: Request, res: Response) => {
 
         // Generate a token
         const token = jwt.sign(
-            { id: user.id },
+            { id: user.id, role: user.role },
             process.env.JWT_SECRET as string,
             { expiresIn: "1h" }
         );
@@ -89,7 +99,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.user?.id },
-            select: { id: true, username: true, email: true }
+            select: { id: true, username: true, email: true, role: true }
         });
 
         if (!user) {

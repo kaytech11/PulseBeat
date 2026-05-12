@@ -12,10 +12,107 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  LISTENER
+  ARTIST
+  ADMIN
+}
+
 model User {
   id        String   @id @default(cuid())
   username  String
   email     String   @unique
   password  String
+  role      Role     @default(LISTENER)
   createdAt DateTime @default(now())
+
+  songs     Song[]
+  playlist  Playlist[]
+  likes Like[]
+  recentlyPlayed RecentlyPlayed[]
+  following Follow[] @relation("Follower")
+  followers Follow[] @relation("Artist")
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  artist      String
+  audioUrl    String
+  coverImage  String?
+  duration    Int?
+   playCount Int @default(0)
+  createdAt   DateTime @default(now())
+
+  userId      String
+  user        User @relation(fields: [userId], references: [id])
+
+
+   playlists PlaylistSong[]
+   likes Like[]
+   recentlyPlayed RecentlyPlayed[]
+}
+
+ model Playlist {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  coverImage  String?
+  createdAt   DateTime       @default(now())
+
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+
+  songs       PlaylistSong[]
+}
+
+model PlaylistSong {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+
+  playlistId String
+  songId     String
+
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, songId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  songId    String
+  
+
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+}
+
+model RecentlyPlayed {
+  id        String   @id @default(cuid())
+  playedAt  DateTime @default(now())
+
+  userId    String
+  songId    String
+
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+
+  followerId String
+  artistId   String
+
+  follower   User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  artist     User @relation("Artist", fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, artistId])
 }
