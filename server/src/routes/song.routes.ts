@@ -10,6 +10,21 @@ import upload from "../middleware/upload.middleware";
 
 const router = Router();
 
+
+/**
+ * @swagger
+ * /songs/upload:
+ *   post:
+ *     summary: Upload a song
+ *     tags:
+ *       - Songs
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Song uploaded successfully
+ */
+
 // Upload song (ARTIST only)
 router.post(
   "/upload",
@@ -22,10 +37,76 @@ router.post(
   uploadSongs
 );
 
+/**
+ * @swagger
+ * /songs:
+ *   get:
+ *     summary: Get all songs
+ *     tags:
+ *       - Songs
+ *     responses:
+ *       200:
+ *         description: Songs retrieved successfully
+ */
+
 // Public routes
 router.get("/", getSongs);
+
+/**
+ * @swagger
+ * /songs/trending:
+ *   get:
+ *     summary: Get trending songs
+ *     tags:
+ *       - Songs
+ *     responses:
+ *       200:
+ *         description: Trending songs retrieved
+ */
+
 router.get("/trending", getTrendingSongs);
+
+/**
+ * @swagger
+ * /songs/stream/{id}:
+ *   get:
+ *     summary: Stream a song
+ *     tags:
+ *       - Songs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: clx123abc456
+ *     responses:
+ *       200:
+ *         description: Song stream retrieved
+ */
+
 router.get("/stream/:id", streamSongs);
+
+/**
+ * @swagger
+ * /songs/{id}:
+ *   put:
+ *     summary: Update a song
+ *     tags:
+ *       - Songs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: clx123abc456
+ *     responses:
+ *       200:
+ *         description: Song updated successfully
+ */
 
 // Protected artist routes
 router.put(
@@ -34,6 +115,28 @@ router.put(
   roleMiddleware("ARTIST"),
   updateSongs
 );
+
+
+/**
+ * @swagger
+ * /songs/{id}:
+ *   delete:
+ *     summary: Delete a song
+ *     tags:
+ *       - Songs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: clx123abc456
+ *     responses:
+ *       200:
+ *         description: Song deleted successfully
+ */
 
 router.delete(
   "/:id",

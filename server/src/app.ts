@@ -11,6 +11,9 @@ import followRoutes from './routes/follow.routes';
 import dashboardRoutes from './routes/dashboard.routes';  
 import homeRoutes from './routes/home.routes';  
 
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger";
+
 const app = express();
 
 app.use(cors());
@@ -42,9 +45,19 @@ app.use('/api/home', homeRoutes);
 //     res.json(users);
 // });
 
+// Swagger UI setup
+
+
 app.get('/', (_req, res) => {
     res.send("PulseBeat API running...");
 });
+
+// Serve Swagger UI at /api-docs
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 export default app;
 
@@ -62,6 +75,8 @@ export default app;
 // GET /api/follow
 // GET /api/dashboard/artist
 // GET /api/home
+
+
 
 
 
