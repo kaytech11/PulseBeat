@@ -63,4 +63,5 @@ router.delete("/:artistId", auth_middleware_1.default, follow_controller_1.unfol
  *         description: Followed artists retrieved
  */
 router.get("/", auth_middleware_1.default, follow_controller_1.getFollowedArtists);
+router.get("/artist/:artistId", auth_middleware_1.default, follow_controller_1.getArtistFollowers);
 exports.default = router;

@@ -21,5 +21,11 @@ const router = (0, express_1.Router)();
  *       200:
  *         description: Artist dashboard retrieved
  */
-router.get("/artist", auth_middleware_1.default, (0, role_middleware_1.default)("artist"), dashboard_controller_1.getArtistDashboard);
+// router.get(
+//   "/artist",
+//   authMiddleware,
+//   roleMiddleware("artist"),
+//   getArtistDashboard
+// );
+router.get("/artist", auth_middleware_1.default, (0, role_middleware_1.default)("ARTIST"), dashboard_controller_1.getArtistDashboard);
 exports.default = router;

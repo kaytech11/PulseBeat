@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-// import prisma from './config/prisma'; // temporary import to ensure prisma is initialized
+// import prisma from './config/prisma'; 
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const song_routes_1 = __importDefault(require("./routes/song.routes"));
 const playlist_routes_1 = __importDefault(require("./routes/playlist.routes"));
@@ -33,7 +33,7 @@ app.use('/api/search', search_routes_1.default);
 // Use history routes
 app.use('/api/history', history_routes_1.default);
 // Use follow routes
-app.use('/api/follow', follow_routes_1.default);
+app.use('/api/follows', follow_routes_1.default);
 // Use dashboard routes
 app.use('/api/dashboard', dashboard_routes_1.default);
 // Use home routes

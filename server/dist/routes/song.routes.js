@@ -7,7 +7,6 @@ const express_1 = require("express");
 const song_controller_1 = require("../controllers/song.controller");
 const auth_middleware_1 = __importDefault(require("../middleware/auth.middleware"));
 const role_middleware_1 = __importDefault(require("../middleware/role.middleware"));
-const upload_middleware_1 = __importDefault(require("../middleware/upload.middleware"));
 const router = (0, express_1.Router)();
 /**
  * @swagger
@@ -23,10 +22,17 @@ const router = (0, express_1.Router)();
  *         description: Song uploaded successfully
  */
 // Upload song (ARTIST only)
-router.post("/upload", auth_middleware_1.default, (0, role_middleware_1.default)("ARTIST"), upload_middleware_1.default.fields([
-    { name: "audio", maxCount: 1 },
-    { name: "cover", maxCount: 1 },
-]), song_controller_1.uploadSongs);
+// router.post(
+//   "/upload",
+//   authMiddleware,
+//   roleMiddleware("ARTIST"),
+//   upload.fields([
+//     { name: "audio", maxCount: 1 },
+//     { name: "cover", maxCount: 1 },
+//   ]),
+//   uploadSongs
+// );
+router.post("/upload", auth_middleware_1.default, (0, role_middleware_1.default)("ARTIST"), song_controller_1.uploadSongs);
 /**
  * @swagger
  * /songs:

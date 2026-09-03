@@ -62,4 +62,7 @@ router.get("/", auth_middleware_1.default, playlist_controller_1.getUserPlaylist
  *         description: Song added to playlist
  */
 router.post("/:playlistId/songs/:songId", auth_middleware_1.default, playlist_controller_1.addSongToPlaylist);
+router.delete("/:playlistId/songs/:songId", auth_middleware_1.default, playlist_controller_1.removeSongFromPlaylist);
+router.delete("/:playlistId", auth_middleware_1.default, playlist_controller_1.deletePlaylist);
 exports.default = router;
+router.patch("/:playlistId", auth_middleware_1.default, playlist_controller_1.updatePlaylist);

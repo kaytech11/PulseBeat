@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFollowedArtists = exports.unfollowArtist = exports.followArtist = void 0;
+exports.getArtistFollowers = exports.getFollowedArtists = exports.unfollowArtist = exports.followArtist = void 0;
 const prisma_1 = __importDefault(require("../config/prisma"));
 // Follow Artist
 const followArtist = async (req, res) => {
@@ -132,3 +132,47 @@ const getFollowedArtists = async (req, res) => {
     }
 };
 exports.getFollowedArtists = getFollowedArtists;
+// Get Artist Followers
+const getArtistFollowers = async (req, res) => {
+    try {
+        const { artistId } = req.params;
+        const artist = await prisma_1.default.user.findUnique({
+            where: {
+                id: artistId,
+            },
+        });
+        if (!artist) {
+            return res.status(404).json({
+                message: "Artist not found",
+            });
+        }
+        const followers = await prisma_1.default.follow.findMany({
+            where: {
+                artistId,
+            },
+            include: {
+                follower: {
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+        res.status(200).json({
+            count: followers.length,
+            followers,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Server error",
+        });
+    }
+};
+exports.getArtistFollowers = getArtistFollowers;

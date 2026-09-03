@@ -79,5 +79,11 @@ router.post('/login', auth_controller_1.login);
  *       200:
  *         description: User profile retrieved
  */
+router.post("/google/register", auth_controller_1.googleRegister);
+router.post("/google/login", auth_controller_1.googleLogin);
+router.get("/verify-email", auth_controller_1.verifyEmail);
+router.post("/resend-verification", auth_controller_1.resendVerificationEmail);
+router.post("/forgot-password", auth_controller_1.forgotPassword);
+router.post("/reset-password", auth_controller_1.resetPassword);
 router.get('/profile', auth_middleware_1.default, auth_controller_1.getProfile);
 exports.default = router;
