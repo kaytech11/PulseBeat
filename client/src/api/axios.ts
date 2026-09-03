@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:5000/api",
+       baseURL: `${import.meta.env.VITE_API_URL}/api`,
     // withCredentials: true, // Include cookies in requests
 });
 
@@ -20,3 +20,4 @@ axiosInstance.interceptors.request.use(
 );
 
 export default axiosInstance;
+

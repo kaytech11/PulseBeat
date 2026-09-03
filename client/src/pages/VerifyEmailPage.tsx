@@ -30,7 +30,7 @@ const VerifyEmailPage = () => {
     const verifyEmail = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/auth/verify-email?token=${token}`
+          `${import.meta.env.VITE_API_URL}/api/auth/verify-email?token=${token}`
         );
 
         setMessage(response.data.message);
