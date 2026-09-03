@@ -448,7 +448,7 @@ const LoginPage = () => {
     <div className="relative min-h-screen w-full overflow-hidden h-full inset-0 bg-[#090909] text-white">
 
       {/* Ambient background glow */}
-      <div className="pointer-events-none absolute -top-80 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#1ED760]/[0.07] blur-[120px]" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-105 w-105 -translate-x-1/2 rounded-full bg-[#1ED760]/[0.07] blur-[120px]" />
 
       <div className="relative flex min-h-screen flex-col">
 
@@ -467,7 +467,7 @@ const LoginPage = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-[430px] rounded-2xl border border-white/[0.08] bg-[#111111] p-5 shadow-[0_20px_70px_rgba(0,0,0,0.45)] sm:p-8  lg:p-9">
+            className="w-full max-w-107.5 rounded-2xl border border-white/8 bg-[#111111] p-5 shadow-[0_20px_70px_rgba(0,0,0,0.45)] sm:p-8  lg:p-9">
 
             {/* Heading */}
             <div className="mb-7">
@@ -569,7 +569,7 @@ const LoginPage = () => {
                     rounded-lg
                     text-[#8B8B8B]
                     transition
-                    hover:bg-white/[0.05]
+                    hover:bg-white/5
                     hover:text-white
                   "
                   aria-label={
