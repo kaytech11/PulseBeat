@@ -18,6 +18,8 @@ const HomePage = () => {
   const [isResending, setIsResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  const RESEND_COOLDOWN_KEY = "pulsebeat_resend_cooldown";
+
   const {
     data = [],
     isLoading,
@@ -33,16 +35,51 @@ const HomePage = () => {
     }
   }, [data, dispatch]);
 
+  // useEffect(() => {
+  //   if (resendCooldown <= 0) return;
+
+  //   const timer = setInterval(() => {
+  //     setResendCooldown((prev) => prev - 1);
+  //   }, 1000);
+
+  //   return () => clearInterval(timer);
+  // }, [resendCooldown]);
+
+  useEffect(() => {
+    const storedCooldown = localStorage.getItem(RESEND_COOLDOWN_KEY);
+
+    if (!storedCooldown) return;
+
+    const expiresAt = Number(storedCooldown);
+    const remaining = Math.ceil((expiresAt - Date.now()) / 1000);
+
+    if (remaining <= 0) {
+      localStorage.removeItem(RESEND_COOLDOWN_KEY);
+      setResendCooldown(0);
+      return;
+    }
+
+    setResendCooldown(remaining);
+  }, []);
+
   useEffect(() => {
     if (resendCooldown <= 0) return;
 
     const timer = setInterval(() => {
-      setResendCooldown((prev) => prev - 1);
+      setResendCooldown((prev) => {
+        const next = prev - 1;
+
+        if (next <= 0) {
+          localStorage.removeItem(RESEND_COOLDOWN_KEY);
+          return 0;
+        }
+
+        return next;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
   }, [resendCooldown]);
-
   // const handleResendVerification = async () => {
   //   if (!user?.email) {
   //     toast.error("Email address not found");
@@ -89,7 +126,16 @@ const HomePage = () => {
       );
 
       // Start 5-minute cooldown
-      setResendCooldown(300);
+      // setResendCooldown(300);
+      // Start and persist 5-minute cooldown
+      const cooldown = 300;
+
+      localStorage.setItem(
+        RESEND_COOLDOWN_KEY,
+        String(Date.now() + cooldown * 1000)
+      );
+
+      setResendCooldown(cooldown);
 
     } catch (error: any) {
       toast.error(
@@ -133,10 +179,10 @@ const HomePage = () => {
               {isResending
                 ? "Sending..."
                 : resendCooldown > 0
-                ? `Resend available in ${Math.floor(resendCooldown / 60)}:${String(
-                  resendCooldown % 60
-                ).padStart(2, "0")}`
-                : "Resend verification email"}
+                  ? `Resend available in ${Math.floor(resendCooldown / 60)}:${String(
+                    resendCooldown % 60
+                  ).padStart(2, "0")}`
+                  : "Resend verification email"}
             </button>
 
           </div>
