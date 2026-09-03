@@ -68,10 +68,10 @@ const MainLayout = ({ children }: Props) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-full bg-[#090909] text-white overflow-hidden">
+    <div className="fixed inset-0 w-full h-full bg-[#090909] text-white overflow-hidden">
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 flex-shrink-0 bg-[#0f0f0f] border-r border-[#202020]">
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-[#0f0f0f] border-r border-[#202020] z-30">
         <Sidebar />
       </aside>
 
@@ -85,17 +85,17 @@ const MainLayout = ({ children }: Props) => {
           />
 
           {/* Sidebar */}
-          <aside className="fixed top-0 left-0 h-full w-72 max-w-[85vw] z-50 lg:hidden">
+          <aside className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] z-50 lg:hidden">
             <Sidebar onClose={() => setMobileMenuOpen(false)} />
           </aside>
         </>
       )}
 
-      {/* Main Application */}
-      <div className="flex flex-1 flex-col min-w-0 h-screen bg-[#090909]">
+      {/* Main Application Area */}
+      <div className="h-full w-full lg:pl-64 flex flex-col bg-[#090909]">
 
         {/* Navbar */}
-        <header className="sticky top-0 z-30 bg-[#090909]/95 backdrop-blur-xl border-b border-white/[0.04]">
+        <header className="flex-shrink-0 z-20 bg-[#090909] border-b border-white/[0.04]">
           <Navbar
             onMenuClick={() => setMobileMenuOpen(true)}
           />
@@ -105,6 +105,7 @@ const MainLayout = ({ children }: Props) => {
         <main
           className="
             flex-1
+            min-h-0
             overflow-y-auto
             bg-[#090909]
             px-4
@@ -122,7 +123,7 @@ const MainLayout = ({ children }: Props) => {
         </main>
 
         {/* Music Player */}
-        <footer className="sticky bottom-0 z-40 bg-[#111111] border-t border-white/[0.06]">
+        <footer className="flex-shrink-0 z-30 bg-[#111111] border-t border-white/[0.06]">
           <MusicPlayer />
         </footer>
 
