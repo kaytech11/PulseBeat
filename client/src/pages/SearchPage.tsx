@@ -20,9 +20,9 @@ const SearchPage = () => {
 
   return (
 
-    <div className="p-6 text-white">
+    <div className="p-6 sm:p-6 text-white">
 
-      <h1 className="text-4xl font-bold mb-8">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">
         Search
       </h1>
 
@@ -40,30 +40,30 @@ const SearchPage = () => {
             w-full
             bg-[#242424]
             text-white
-            px-5
-            py-4
+            px-4 sm:px-5
+            py-3 sm:py-4
             rounded-full
             outline-none
             border
             border-[#333]
             focus:border-green-500
-            mb-8
+            mb-6 sm:mb-8
           "
       />
 
       {isLoading && (
-        <p className="text-gray-400">
+       <p className="text-gray-400 text-sm sm:text-base">
           Searching...
         </p>
       )}
 
       {!query && (
-        <div className="text-gray-400">
+        <div className="text-gray-400 text-sm sm:text-base text-center sm:text-left">
           Start typing to search for songs or artists
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
         {data.map((song: any) => (
           <SongCard
             key={song.id}

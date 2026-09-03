@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-// import prisma from './config/prisma'; // temporary import to ensure prisma is initialized
+// import prisma from './config/prisma'; 
 import authRoutes from './routes/auth.routes';
 import songRoutes from './routes/song.routes';
 import playlistRoutes from './routes/playlist.routes';
@@ -34,7 +34,7 @@ app.use('/api/search', searchRoutes);
 // Use history routes
 app.use('/api/history', historyRoutes);
 // Use follow routes
-app.use('/api/follow', followRoutes);
+app.use('/api/follows', followRoutes);
 // Use dashboard routes
 app.use('/api/dashboard', dashboardRoutes);
 // Use home routes

@@ -1,10 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-
 import LikedSongRow from "../components/LikedSongRow";
 import { getLikedSongs } from "../services/like.service";
-
-
 const LibraryPage = () => {
   const {
     data: likedSongs = [],
@@ -35,22 +32,22 @@ const LibraryPage = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-4xl sm:text-4xl font-bold">
           Your Library
         </h1>
 
-        <p className="text-gray-400 mt-2">
+        <p className="text-gray-400 mt-2 text-sm sm:text-base">
           Your liked songs
         </p>
       </div>
 
       {!isLoading && likedSongs.length > 0 && (
-        <div className="flex justify-end">
+        <div className="flex justify-end sm:justify-end">
 
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-[#1DB954] border border-[#333] rounded-lg px-4 py-2 text-white outline-none "
+            className="w-full sm:w-auto bg-[#1DB954] border border-[#333] rounded-lg px-4 py-2 text-white outline-none"
           >
             <option value="recent">
               Recently Added
@@ -70,8 +67,8 @@ const LibraryPage = () => {
       )}
 
       {!isLoading && likedSongs.length === 0 && (
-        <div className="text-center py-24 text-gray-500">
-          <h2 className="text-2xl font-semibold">
+        <div className="text-center py-24 sm:py-24 text-gray-500">
+          <h2 className="text-xl sm:text-2xl font-semibold">
             No liked songs yet
           </h2>
 
@@ -81,8 +78,8 @@ const LibraryPage = () => {
         </div>
       )}
 
-      <div className="mt-10">
-  <h2 className="text-2xl font-bold mb-4">
+      <div className="mt-10 sm:mt-10">
+  <h2 className="text-xl sm:text-2xl font-bold mb-4">
     Your Playlists
   </h2>
 

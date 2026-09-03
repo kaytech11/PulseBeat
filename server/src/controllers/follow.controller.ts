@@ -160,3 +160,58 @@ export const getFollowedArtists = async (
     });
   }
 };
+
+// Get Artist Followers
+export const getArtistFollowers = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const { artistId } = req.params as {
+      artistId: string;
+    };
+
+    const artist = await prisma.user.findUnique({
+      where: {
+        id: artistId,
+      },
+    });
+
+    if (!artist) {
+      return res.status(404).json({
+        message: "Artist not found",
+      });
+    }
+
+    const followers = await prisma.follow.findMany({
+      where: {
+        artistId,
+      },
+
+      include: {
+        follower: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json({
+      count: followers.length,
+      followers,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

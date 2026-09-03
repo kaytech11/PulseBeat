@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-
+// Define the structure of the JWT payload
 interface Jwtpayload {
     id: string;
     role: string;
 }
 
+// Define a custom request interface that includes the user property
 export interface AuthRequest extends Request {
     user?: Jwtpayload;
 }
+
+// authenticate requests using JWT
 
 const authMiddleware = (
     req: AuthRequest,

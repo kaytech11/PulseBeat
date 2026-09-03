@@ -29,7 +29,7 @@ export const createPlaylist = async (
             playlist,
         });
     } catch (error) {
-            console.log(error);
+        console.log(error);
 
         res.status(500).json({
             message: "Server error",
@@ -42,7 +42,7 @@ export const createPlaylist = async (
 
 export const getUserPlaylists = async (
     req: AuthRequest,
-    res: Response   
+    res: Response
 ) => {
     try {
         const playlists = await prisma.playlist.findMany({
@@ -52,7 +52,7 @@ export const getUserPlaylists = async (
             include: {
                 songs: {
                     include: {
-                        song: true, 
+                        song: true,
                     }
                 }
             }
@@ -79,19 +79,19 @@ export const addSongToPlaylist = async (
     try {
         const { playlistId, songId } = req.params as {
             playlistId: string;
-            songId: string; 
-        }; 
+            songId: string;
+        };
 
         // find playlist
         const playlist = await prisma.playlist.findUnique({
             where: { id: playlistId },
-        }); 
+        });
 
         if (!playlist) {
             return res.status(404).json({
                 message: "Playlist not found",
             });
-        }   
+        }
 
         // ownership check
         if (playlist.userId !== req.user?.id) {
@@ -119,7 +119,7 @@ export const addSongToPlaylist = async (
                     songId,
                 },
             },
-        }); 
+        });
 
         if (existingSong) {
             return res.status(400).json({
@@ -134,12 +134,162 @@ export const addSongToPlaylist = async (
             },
         });
 
-        res.status(200).json({  
+        res.status(200).json({
             message: "Song added to playlist",
         });
     } catch (error) {
         console.log(error);
-        res.status(500).json({  
+        res.status(500).json({
+            message: "Server error",
+        });
+    }
+};
+
+// delete song from playlist
+export const removeSongFromPlaylist = async (
+    req: AuthRequest,
+    res: Response
+) => {
+    try {
+        const { playlistId, songId } = req.params as {
+            playlistId: string;
+            songId: string;
+        };
+
+        const playlist = await prisma.playlist.findUnique({
+            where: {
+                id: playlistId,
+            },
+        });
+
+        if (!playlist) {
+            return res.status(404).json({
+                message: "Playlist not found",
+            });
+        }
+
+        if (playlist.userId !== req.user?.id) {
+            return res.status(403).json({
+                message: "Access denied",
+            });
+        }
+
+        await prisma.playlistSong.delete({
+            where: {
+                playlistId_songId: {
+                    playlistId,
+                    songId,
+                },
+            },
+        });
+
+        res.status(200).json({
+            message: "Song removed from playlist",
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            message: "Server error",
+        });
+    }
+};
+
+// delete playlist 
+export const deletePlaylist = async (
+    req: AuthRequest,
+    res: Response
+) => {
+    try {
+        const { playlistId } = req.params as {
+            playlistId: string;
+        };
+
+        const playlist = await prisma.playlist.findUnique({
+            where: {
+                id: playlistId,
+            },
+        });
+
+        if (!playlist) {
+            return res.status(404).json({
+                message: "Playlist not found",
+            });
+        }
+
+        if (playlist.userId !== req.user?.id) {
+            return res.status(403).json({
+                message: "Access denied",
+            });
+        }
+
+        await prisma.playlist.delete({
+            where: {
+                id: playlistId,
+            },
+        });
+
+        return res.status(200).json({
+            message: "Playlist deleted successfully",
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: "Server error",
+        });
+    }
+};
+
+// update playlist
+export const updatePlaylist = async (
+    req: AuthRequest,
+    res: Response
+) => {
+    try {
+        const { playlistId } = req.params as {
+            playlistId: string;
+        };
+        const { name, description } = req.body;
+
+        const playlist = await prisma.playlist.findUnique({
+            where: {
+                id: playlistId,
+            },
+        });
+
+        if (!playlist) {
+            return res.status(404).json({
+                message: "Playlist not found",
+            });
+        }
+
+        if (playlist.userId !== req.user?.id) {
+            return res.status(403).json({
+                message: "Access denied",
+            });
+        }
+
+        const updatedPlaylist = await prisma.playlist.update({
+            where: {
+                id: playlistId,
+            },
+            data: {
+                name,
+                description,
+            },
+        });
+
+        res.status(200).json({
+            message: "Playlist updated successfully",
+            playlist: updatedPlaylist,
+        });
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
             message: "Server error",
         });
     }

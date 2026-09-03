@@ -27,3 +27,40 @@ export const addSongToPlaylist = async (
 
   return data;
 };
+
+export const removeSongFromPlaylist = async (
+  playlistId: string,
+  songId: string
+) => {
+  const { data } = await api.delete(
+    `/playlists/${playlistId}/songs/${songId}`
+  );
+
+  return data;
+};
+
+export const updatePlaylist = async (
+  playlistId: string,
+  name: string,
+  description?: string
+) => {
+  const { data } = await api.patch(
+    `/playlists/${playlistId}`,
+    {
+      name,
+      description,
+    }
+  );
+
+  return data.playlist;
+};
+
+export const deletePlaylist = async (
+  playlistId: string
+) => {
+  const { data } = await api.delete(
+    `/playlists/${playlistId}`
+  );
+
+  return data;
+};

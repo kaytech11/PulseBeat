@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import authMiddleware from "../middleware/auth.middleware";
-import { followArtist, unfollowArtist, getFollowedArtists } from "../controllers/follow.controller";
+import { followArtist, unfollowArtist, getFollowedArtists, getArtistFollowers } from "../controllers/follow.controller";
 
 const router = Router();
 
@@ -75,6 +75,12 @@ router.get(
     "/",
     authMiddleware,
     getFollowedArtists
+);
+
+router.get(
+  "/artist/:artistId",
+  authMiddleware,
+  getArtistFollowers
 );
 
 export default router;

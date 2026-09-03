@@ -6,7 +6,10 @@ import  authMiddleware from "../middleware/auth.middleware";
 import {
     createPlaylist,
     getUserPlaylists,
-    addSongToPlaylist
+    addSongToPlaylist,
+    removeSongFromPlaylist,
+    deletePlaylist,
+    updatePlaylist,
 } from "../controllers/playlist.controller";
 
 
@@ -84,4 +87,22 @@ router.post(
     authMiddleware,
     addSongToPlaylist
 );
+
+router.delete(
+  "/:playlistId/songs/:songId",
+  authMiddleware,
+  removeSongFromPlaylist
+);
+
+router.delete(
+  "/:playlistId",
+  authMiddleware,
+  deletePlaylist
+);
 export default router;
+
+router.patch(
+  "/:playlistId",
+  authMiddleware,
+  updatePlaylist
+);

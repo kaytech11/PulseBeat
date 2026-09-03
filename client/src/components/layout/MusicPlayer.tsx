@@ -1,4 +1,4 @@
-// export default MusicPlayer;   
+import { SkipBack, SkipForward, Play, Pause, Volume2, Shuffle, Repeat, Repeat1, } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
@@ -17,25 +17,6 @@ const MusicPlayer = () => {
     (state: RootState) => state.player
   );
 
-  // useEffect(() => {
-  //   if (!audioRef.current || !currentSong) return;
-
-  //   const audio = audioRef.current;
-
-  //   audio.load();
-
-  //   const handleLoaded = () => {
-  //     if (isPlaying) {
-  //       audio.play().catch((err) => console.log(err));
-  //     }
-  //   };
-
-  //   audio.addEventListener("loadeddata", handleLoaded);
-
-  //   return () => {
-  //     audio.removeEventListener("loadeddata", handleLoaded);
-  //   };
-  // }, [currentSong]);   
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
 
@@ -45,12 +26,12 @@ const MusicPlayer = () => {
   }, [currentSong]);
 
   useEffect(() => {
-  console.log("MusicPlayer Mounted");
+    console.log("MusicPlayer Mounted");
 
-  return () => {
-    console.log("MusicPlayer Unmounted");
-  };
-}, []);
+    return () => {
+      console.log("MusicPlayer Unmounted");
+    };
+  }, []);
 
 
   useEffect(() => {
@@ -148,15 +129,15 @@ const MusicPlayer = () => {
   };
 
   return (
-    <div className="h-[100px] bg-[#181818] border-t border-[#282828] text-white flex items-center justify-between px-5">
-      <div className="flex items-center gap-4 w-1/3">
+    <div className="bg-[#181818] border-t border-[#282828] text-white flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 px-4 md:px-5 py-3 md:h-[100px]">
+      <div className="flex items-center gap-3 w-full md:w-1/3">
         <img
           src={
             currentSong.coverImage ||
             "https://via.placeholder.com/300"
           }
           alt={currentSong.title}
-          className="w-[64px] h-[64px] rounded shadow-lg object-cover"
+          className="w-14 h-14 md:w-16 md:h-16 rounded shadow-lg object-cover"
         />
         <div className="min-w-0">
           <h3 className="truncate font-semibold">
@@ -169,32 +150,40 @@ const MusicPlayer = () => {
         </div>
       </div>
 
-      <div className="w-1/3 flex flex-col items-center gap-2">
+      <div className="w-full md:w-1/3 flex flex-col items-center gap-3">
 
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 md:gap-6 flex-wrap justify-center">
+
           <button
             onClick={() => dispatch(toggleShuffle())}
-            className={`text-sm px-2 py-1 border rounded ${shuffle
-              ? "bg-green-500 text-black"
-              : ""
+            className={`transition ${shuffle
+              ? "text-[#1DB954]"
+              : "text-gray-400 hover:text-white"
               }`}
           >
-            🔀
+            <Shuffle size={20} />
           </button>
 
           <button
             onClick={() => dispatch(previousSong())}
             className="text-xl"
           >
-            ⏮
+            {/* ⏮ */}
+            <SkipBack size={22} />
           </button>
+
+
 
           <button
             onClick={() => dispatch(togglePlay())}
-            className="w-10 h-10 bg-white text-black rounded-full"
+            className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:scale-100 transition"
           >
-            {isPlaying ? "⏸" : "▶"}
+            {isPlaying ? (
+              <Pause fill="black" size={20} />
+            ) : (
+              <Play fill="black" size={20} className="ml-0.5" />
+            )}
           </button>
 
           <button
@@ -218,21 +207,36 @@ const MusicPlayer = () => {
             }}
             className="text-xl"
           >
-            ⏭
+            {/* ⏭ */}
+            <SkipForward size={22} />
           </button>
 
-          <button
+          {/* <button
             onClick={() => dispatch(cycleRepeatMode())}
             className="text-sm px-2 py-1 border rounded"
           >
             {repeatMode === "off" && "Repeat Off"}
             {repeatMode === "one" && "Repeat One"}
             {repeatMode === "all" && "Repeat All"}
+          </button> */}
+
+          <button
+            onClick={() => dispatch(cycleRepeatMode())}
+            className={`transition ${repeatMode === "off"
+                ? "text-gray-400"
+                : "text-[#1DB954]"
+              }`}
+          >
+            {repeatMode === "one" ? (
+              <Repeat1 size={20} />
+            ) : (
+              <Repeat size={20} />
+            )}
           </button>
 
         </div>
 
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-2 w-full max-w-xl">
 
           <span className="text-xs">
             {formatTime(currentTime)}
@@ -255,10 +259,14 @@ const MusicPlayer = () => {
         </div>
       </div>
 
-      {/* <div className="w-1/3" /> */}
-      <div className="w-1/3 flex justify-end items-center gap-2">
+      
+      <div className="w-full md:w-1/3 flex justify-center md:justify-end items-center gap-2">
 
-        <span>🔊</span>
+        {/* <span>🔊</span> */}
+        <Volume2
+          size={20}
+          className="text-gray-300"
+        />
 
         <input
           type="range"
@@ -267,7 +275,7 @@ const MusicPlayer = () => {
           step={0.01}
           value={volume}
           onChange={handleVolumeChange}
-          className="w-[120px]"
+         className="w-24 md:w-[120px]"
         />
 
       </div>

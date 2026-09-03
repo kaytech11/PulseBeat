@@ -2,140 +2,127 @@ import { Request, Response } from "express";
 import prisma from "../config/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import uploadToCloudinary from "../utils/uploadToCloudinary";
-
-
-
-// Upload Song
-// export const uploadSongs = async (
-//     req: AuthRequest,
-//     res: Response
-// ) => {
-//     try {
-//         const { title, artist } = req.body;
-
-//         // Files from multer
-//         const files = req.files as {
-//             [fieldname: string]: Express.Multer.File[];
-//         };
-
-//         const audioFile = files?.audio?.[0];
-//         const coverFile = files?.cover?.[0];
-
-//         // Validation
-//         if (!title || !artist || !audioFile) {
-//             return res.status(400).json({
-//                 message: "Title, artist and audio file are required",
-//             });
-//         }
-
-//         /*
-//           TEMPORARY:
-//           Later we'll upload to Cloudinary
-//         */
-
-//         let coverImageUrl: string | null = null;
-
-//         if (coverFile) {
-//             coverImageUrl = await uploadToCloudinary(
-//                 coverFile.buffer,
-//                 "pulsebeat/covers",
-//                 "image"
-//             );
-//         }
-
-//         const song = await prisma.song.create({
-//             data: {
-//                 title,
-//                 artist,
-//                 audioUrl, 
-
-//                const audioUrl = await uploadToCloudinary(
-//                     audioFile.buffer,
-//                     "pulsebeat/audio",
-//                     "video"
-//                 ),
-//                 coverImage: coverImageUrl,
-//                 userId: req.user!.id,
-//             },
-//         });
-
-//         res.status(201).json({
-//             message: "Song uploaded successfully",
-//             song,
-//         });
-//     } catch (error) {
-//         console.log(error);
-
-//         res.status(500).json({
-//             message: "Server error",
-//         });
-//     }
-// };
+import Busboy from "busboy";
+import { Readable } from "stream";
 
 // Upload Song
 export const uploadSongs = async (
-    req: AuthRequest,
-    res: Response
+  req: AuthRequest,
+  res: Response
 ) => {
-    try {
-        const { title, artist } = req.body;
+  try {
+    const busboy = Busboy({
+      headers: req.headers,
+      limits: {
+        files: 2,
+      },
+    });
 
-        // Files from multer
-        const files = req.files as {
-            [fieldname: string]: Express.Multer.File[];
-        };
+    let title = "";
+    let artist = "";
 
-        const audioFile = files?.audio?.[0];
-        const coverFile = files?.cover?.[0];
+    let audioUrl: string | null = null;
+    let coverImageUrl: string | null = null;
 
-        // Validation
-        if (!title || !artist || !audioFile) {
-            return res.status(400).json({
-                message: "Title, artist and audio file are required",
-            });
+    let audioUpload: Promise<string> | null = null;
+    let coverUpload: Promise<string> | null = null;
+
+    busboy.on("field", (fieldname, value) => {
+      if (fieldname === "title") {
+        title = value;
+      }
+
+      if (fieldname === "artist") {
+        artist = value;
+      }
+    });
+
+    busboy.on("file", (fieldname, file, info) => {
+      const { filename, mimeType } = info;
+
+      console.log("Receiving file:", {
+        fieldname,
+        filename,
+        mimeType,
+      });
+
+      if (fieldname === "audio") {
+        audioUpload = uploadToCloudinary(
+          file as Readable,
+          "pulsebeat/audio",
+          "video"
+        );
+      }
+
+      if (fieldname === "cover") {
+        coverUpload = uploadToCloudinary(
+          file as Readable,
+          "pulsebeat/covers",
+          "image"
+        );
+      }
+    });
+
+    busboy.on("error", (error) => {
+      console.error("Busboy error:", error);
+
+      if (!res.headersSent) {
+        res.status(400).json({
+          message: "Failed to process uploaded files",
+        });
+      }
+    });
+
+    busboy.on("finish", async () => {
+      try {
+        if (!title || !artist || !audioUpload) {
+          return res.status(400).json({
+            message: "Title, artist and audio file are required",
+          });
         }
 
-        // Upload audio to Cloudinary
-        const audioUrl = await uploadToCloudinary(
-            audioFile.buffer,
-            "pulsebeat/audio",
-            "video"
-        );
+        // Wait for audio upload
+        audioUrl = await audioUpload;
 
-        // Upload cover image if provided
-        let coverImageUrl: string | null = null;
-
-        if (coverFile) {
-            coverImageUrl = await uploadToCloudinary(
-                coverFile.buffer,
-                "pulsebeat/covers",
-                "image"
-            );
+        // Wait for cover upload if provided
+        if (coverUpload) {
+          coverImageUrl = await coverUpload;
         }
 
         // Save song to database
         const song = await prisma.song.create({
-            data: {
-                title,
-                artist,
-                audioUrl,
-                coverImage: coverImageUrl,
-                userId: req.user!.id,
-            },
+          data: {
+            title,
+            artist,
+            audioUrl,
+            coverImage: coverImageUrl,
+            userId: req.user!.id,
+          },
         });
 
-        res.status(201).json({
-            message: "Song uploaded successfully",
-            song,
+        return res.status(201).json({
+          message: "Song uploaded successfully",
+          song,
         });
+      } catch (error) {
+        console.error("Cloudinary upload error:", error);
 
-    } catch (error) {
-        console.log(error);
+        if (!res.headersSent) {
+          return res.status(500).json({
+            message: "Failed to upload song",
+          });
+        }
+      }
+    });
 
-        res.status(500).json({
-            message: "Server error",
-        });
-    }
+    req.pipe(busboy);
+  } catch (error) {
+    console.error("Upload song error:", error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
 };
 
 

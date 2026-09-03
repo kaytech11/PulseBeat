@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { getProfile, login, register } from "../controllers/auth.controller";
+import { getProfile, login, register,googleRegister,
+ googleLogin, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword } from "../controllers/auth.controller";
 import authMiddleware from "../middleware/auth.middleware";
+
 
  const router = Router();
 
@@ -80,6 +82,14 @@ router.post('/login', login);
  *       200:
  *         description: User profile retrieved
  */
+
+router.post("/google/register", googleRegister);
+router.post("/google/login", googleLogin);
+router.get("/verify-email", verifyEmail);
+router.post("/resend-verification", resendVerificationEmail);
+router.post("/forgot-password",forgotPassword);
+router.post("/reset-password",resetPassword);
+
 
 router.get('/profile', authMiddleware, getProfile);
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { uploadSong } from "../services/song.service";
+import { toast } from "react-toastify";
 
 const UploadPage = () => {
   const [title, setTitle] = useState("");
@@ -7,15 +8,22 @@ const UploadPage = () => {
   const [audio, setAudio] = useState<File | null>(null);
   const [cover, setCover] = useState<File | null>(null);
 
+  const [progress, setProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!audio) {
-      alert("Audio file is required");
+      // alert("Audio file is required");
+      toast.error("Audio file is required");
       return;
     }
 
     try {
+      setUploading(true);
+      setProgress(0);
+
       const formData = new FormData();
 
       formData.append("title", title);
@@ -26,17 +34,40 @@ const UploadPage = () => {
         formData.append("cover", cover);
       }
 
-      const data = await uploadSong(formData);
+      const data = await uploadSong(
+        formData,
+        (uploadprogress) => {
+          const safeProgress = Math.min(uploadprogress, 95);
+
+          setProgress(safeProgress);
+        }
+      );
 
       console.log(data);
 
-      alert("Song uploaded successfully");
+
+      setProgress(100);
+
+      // alert("Song uploaded successfully");
+      toast.success("Song uploaded successfully");
 
       setTitle("");
       setArtist("");
+      setAudio(null);
+      setCover(null);
+
+      setUploading(false);
+
+      setTimeout(() => {
+        setProgress(0);
+      }, 500);
     } catch (error) {
       console.error(error);
-      alert("Upload failed");
+
+      setUploading(false);
+      setProgress(0);
+
+      toast.error("Upload failed");
     }
   };
 
@@ -49,7 +80,10 @@ const UploadPage = () => {
           Upload Song
         </h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+        >
 
           <input
             type="text"
@@ -71,6 +105,7 @@ const UploadPage = () => {
             <label className="text-sm text-gray-400">
               Audio File
             </label>
+
             <input
               type="file"
               accept="audio/*"
@@ -85,6 +120,7 @@ const UploadPage = () => {
             <label className="text-sm text-gray-400">
               Cover Image
             </label>
+
             <input
               type="file"
               accept="image/*"
@@ -95,16 +131,42 @@ const UploadPage = () => {
             />
           </div>
 
+          {uploading && (
+            <div className="space-y-2">
+
+              <div className="flex justify-between text-sm text-gray-400">
+                <span>  {progress >= 95 ? "Processing..." : "Uploading..."}</span>
+                <span>{progress}%</span>
+              </div>
+
+              <div className="w-full h-2 bg-[#2a2a2a] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#1DB954] transition-all duration-200"
+                  style={{
+                    width: `${progress}%`,
+                  }}
+                />
+              </div>
+
+            </div>
+          )}
+
           <button
             type="submit"
-            className="mt-2 bg-[#1DB954] hover:bg-[#1ed760] text-black font-semibold py-2 rounded-full transition cursor-pointer"
+            disabled={uploading}
+            className="mt-2 bg-[#1DB954] hover:bg-[#1ed760] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold py-2 rounded-full transition"
           >
-            Upload Song
+            {uploading
+              ? progress >= 99
+                ? "Processing..."
+                : `Uploading... ${progress}%`
+              : "Upload Song"}
           </button>
 
         </form>
 
       </div>
+
     </div>
   );
 };

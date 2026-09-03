@@ -19,10 +19,16 @@ const router = Router();
  *         description: Artist dashboard retrieved
  */
 
+// router.get(
+//   "/artist",
+//   authMiddleware,
+//   roleMiddleware("artist"),
+//   getArtistDashboard
+// );
 router.get(
   "/artist",
   authMiddleware,
-  roleMiddleware("artist"),
+  roleMiddleware("ARTIST"),
   getArtistDashboard
 );
 

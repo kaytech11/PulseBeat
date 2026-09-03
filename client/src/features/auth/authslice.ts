@@ -6,6 +6,7 @@ interface User {
     username: string;
     email: string;
     role: "ARTIST" | "LISTENER";
+    emailVerified: boolean;
 }
 
 interface AuthState {

@@ -26,14 +26,20 @@ const router = Router();
  */
 
 // Upload song (ARTIST only)
+// router.post(
+//   "/upload",
+//   authMiddleware,
+//   roleMiddleware("ARTIST"),
+//   upload.fields([
+//     { name: "audio", maxCount: 1 },
+//     { name: "cover", maxCount: 1 },
+//   ]),
+//   uploadSongs
+// );
 router.post(
   "/upload",
   authMiddleware,
   roleMiddleware("ARTIST"),
-  upload.fields([
-    { name: "audio", maxCount: 1 },
-    { name: "cover", maxCount: 1 },
-  ]),
   uploadSongs
 );
 
