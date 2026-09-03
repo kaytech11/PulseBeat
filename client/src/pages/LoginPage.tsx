@@ -448,7 +448,7 @@ const LoginPage = () => {
     <div className="relative min-h-screen w-full overflow-hidden h-full inset-0 bg-[#090909] text-white">
 
       {/* Ambient background glow */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#1ED760]/[0.07] blur-[120px]" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-full w-[420px] -translate-x-1/2 rounded-full bg-[#1ED760]/[0.07] blur-[120px]" />
 
       <div className="relative flex min-h-screen flex-col">
 
